@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:irc_stew/model/wheel.dart';
 import 'package:irc_stew/view/homepage.dart';
+import 'package:hive_flutter/adapters.dart';
 
-void main()
+void main() async
 {
+  await Hive.initFlutter();
+
   runApp(const App());
+
+  Hive.registerAdapter(WheelAdapter());
+  Hive.registerAdapter(ColorAdapter());
+  await Hive.openBox('dataBox');
 }
 
 class App extends StatefulWidget

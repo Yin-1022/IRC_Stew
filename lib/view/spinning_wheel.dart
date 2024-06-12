@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
+import 'package:irc_stew/data/database.dart';
 import 'package:irc_stew/model/wheel.dart';
 import 'package:irc_stew/model/color.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class SpinWheel extends StatefulWidget
 {
@@ -22,12 +24,23 @@ class _SpinWheelState extends State<SpinWheel>
   bool isMessageShown = false;
   Color _selectedColor = Colors.red;
   final TextEditingController _textFieldController = TextEditingController();
+  final _dataBox = Hive.box('dataBox');
+  DataBase db = DataBase();
 
-  List<Wheel> wheels =
-  [
-    Wheel(id: 0, content: "hey", color: Colors.red.shade300),
-    Wheel(id: 1, content: "he", color: Colors.blue.shade300)
-  ];
+  @override
+  void initState()
+  {
+    if(_dataBox.get("wheelList") == null)
+    {
+      db.createInitialData();
+    }
+    else
+    {
+      db.loadData();
+    }
+
+    super.initState();
+  }
 
   @override
   void dispose()
@@ -38,8 +51,8 @@ class _SpinWheelState extends State<SpinWheel>
 
   void deleteWheel(int index)
   {
-    Wheel wheel = wheels[index];
-    wheels.remove(wheel);
+    Wheel wheel = db.wheelList[index];
+    db.wheelList.remove(wheel);
   }
 
   @override
@@ -66,18 +79,18 @@ class _SpinWheelState extends State<SpinWheel>
                     animateFirst: false,
                     items:
                     [
-                      for(int i=0; i< wheels.length; i++)...<FortuneItem>
+                      for(int i=0; i< db.wheelList.length; i++)...<FortuneItem>
                       {
                         FortuneItem
                         (
-                            style: FortuneItemStyle(color: wheels[i].color, borderWidth: 0),
-                            child: Text(wheels[i].content, style: const TextStyle(fontSize: 25)),
+                            style: FortuneItemStyle(color: db.wheelList[i].color, borderWidth: 0),
+                            child: Text(db.wheelList[i].content, style: const TextStyle(fontSize: 25)),
                             onTap:()
                             {
                               if(isButtonPressed == false)
                               {
                                 pressed = i;
-                                _selectedColor = wheels[pressed].color;
+                                _selectedColor = db.wheelList[pressed].color;
                                 editWheel(context);
                               }
                               else
@@ -101,7 +114,7 @@ class _SpinWheelState extends State<SpinWheel>
                     onAnimationEnd: ()
                     {
                       setState(() {
-                        result = wheels[selected.value].content;
+                        result = db.wheelList[selected.value].content;
                         isButtonPressed = false;
                         isMessageShown = false;
                       });
@@ -127,7 +140,7 @@ class _SpinWheelState extends State<SpinWheel>
                   {
                     if(isButtonPressed == false)
                     {
-                      setState(() {selected.add(Fortune.randomInt(0, wheels.length));});
+                      setState(() {selected.add(Fortune.randomInt(0, db.wheelList.length));});
                     }
                   },
                 ),
@@ -223,15 +236,16 @@ class _SpinWheelState extends State<SpinWheel>
                   String wheelContext = _textFieldController.text;
                   setState(()
                   {
-                    if(wheelContext != "" && wheels.length < 12)
+                    if(wheelContext != "" && db.wheelList.length < 12)
                     {
                       Navigator.of(context).pop();
-                      wheels.add
+                      db.wheelList.add
                       (
-                          Wheel(id: wheels.length, content: _textFieldController.text, color: _selectedColor)
+                          Wheel(id: db.wheelList.length, content: _textFieldController.text, color: _selectedColor)
                       );
+                      db.updateDataBase();
                     }
-                    else if (wheels.length >= 12)
+                    else if (db.wheelList.length >= 12)
                     {
                       showDialog(context: context, builder: (BuildContext context)
                       {
@@ -258,7 +272,7 @@ class _SpinWheelState extends State<SpinWheel>
 
   void editWheel(BuildContext context) => showDialog
   (
-      barrierLabel: _textFieldController.text = wheels[pressed].content,
+      barrierLabel: _textFieldController.text = db.wheelList[pressed].content,
       context: context,
       builder: (context) => AlertDialog
         (
@@ -273,7 +287,7 @@ class _SpinWheelState extends State<SpinWheel>
               TextField
               (
                 controller: _textFieldController,
-                decoration: InputDecoration(hintText: wheels[pressed].content, hintStyle: const TextStyle(fontSize: 20)),
+                decoration: InputDecoration(hintText: db.wheelList[pressed].content, hintStyle: const TextStyle(fontSize: 20)),
               ),
               const SizedBox(height: 30),
               colorPicker(),
@@ -286,9 +300,10 @@ class _SpinWheelState extends State<SpinWheel>
                   (
                       onPressed: ()
                       {
-                        if(wheels.length>2)
+                        if(db.wheelList.length>2)
                         {
                           deleteWheel(pressed);
+                          db.updateDataBase();
                           Navigator.of(context).pop();
                         }
                         else
@@ -322,8 +337,9 @@ class _SpinWheelState extends State<SpinWheel>
                     {
                       if(wheelContext != "")
                       {
-                        wheels[pressed].content = wheelContext;
-                        wheels[pressed].color = _selectedColor;
+                        db.wheelList[pressed].content = wheelContext;
+                        db.wheelList[pressed].color = _selectedColor;
+                        db.updateDataBase();
                       }
                     });
                     Navigator.of(context).pop();
