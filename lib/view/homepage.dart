@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:irc_stew/view/spinning_wheel.dart';
+import 'package:irc_stew/view/spinning_wheel_page.dart';
+import 'package:irc_stew/view/converter_pages/converter_main.dart';
 
 
 class HomePage extends StatefulWidget
@@ -32,7 +33,7 @@ class _HomePageState extends State<HomePage>
               children:
               [
                 ButtonBox(boxSize: 150, boxText:"轉盤" , boxIcon: Icons.settings_backup_restore, destination: SpinWheel()),
-                ButtonBox(boxSize: 150, boxText:"換算" , boxIcon: Icons.calculate, destination: SpinWheel()),
+                ButtonBox(boxSize: 150, boxText:"換算" , boxIcon: Icons.calculate, destination: Currency()),
               ],
             ),
             SizedBox(height: 30),
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage>
               children:
               [
                 ButtonBox(boxSize: 150, boxText:"行事曆" , boxIcon: Icons.calendar_month, destination: SpinWheel()),
-                ButtonBox(boxSize: 150, boxText:"轉盤" , boxIcon: Icons.settings_backup_restore, destination: SpinWheel()),
+                ButtonBox(boxSize: 150, boxText:"轉盤" , boxIcon: Icons.settings_backup_restore, destination: Currency()),
               ],
             ),
             SizedBox(height: 30),
