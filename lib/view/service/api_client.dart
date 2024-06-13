@@ -1,24 +1,22 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:irc_stew/model/json_converter.dart';
 
 class ApiClientCurrency
 {
-  final Uri currencyURL = Uri.https("api.coinbase.com","/v2/exchange-rates");
+  String key = "d68389579df24d8197017d13a3204314";
 
-  Future<List<String>> getCurrencies() async
+  Future<Map> getCurrencies() async
   {
-    http.Response res = await http.get(currencyURL);
-    if(res.statusCode == 200)
-    {
-      var body = jsonDecode(res.body);
-      var list = body["rates"];
-      List<String> allCurrencies = (list.keys).toList();
-      return allCurrencies;
-    }
-    else
-    {
-      throw Exception("無法連上API");
-    }
+    var res = await http.get(Uri.parse("https://openexchangerates.org/api/currencies.json?base=USD&app_id=d68389579df24d8197017d13a3204314"));
+    final allCurrencies = allCurrenciesFromJson(res.body);
+    return allCurrencies;
+  }
+
+  Future<RatesModel> getRates() async
+  {
+    var res = await http.get(Uri.parse("https://openexchangerates.org/api/latest.json?base=USD&app_id=d68389579df24d8197017d13a3204314"));
+    final result = ratesModelFromJson(res.body);
+    return result;
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:irc_stew/model/json_converter.dart';
 import 'package:irc_stew/view/service/api_client.dart';
 
 class CurrencyView extends StatefulWidget
@@ -19,24 +20,24 @@ class _CurrencyViewState extends State<CurrencyView>
   List<String> countries = [];
   String? providedCountry = 'TWD';
   String? goalCountry = 'USD';
-
+  late Future<RatesModel> result;
+  late Future<Map> allCurrencies;
 
   @override
   void initState()
   {
-    (() async
-    {
-      List<String> list = await client.getCurrencies();
-      setState(()
-      {
-        currencies = list;
-      });
-    });
     super.initState();
+    setState(() {
+      result = client.getRates();
+      allCurrencies = client.getCurrencies();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var h = MediaQuery.of(context).size.height;
+    var w = MediaQuery.of(context).size.width;
+
     return Center
     (
       child: Column
@@ -45,7 +46,7 @@ class _CurrencyViewState extends State<CurrencyView>
         [
           Container
           (
-            width: 300,
+            width: h,
             height: 50,
             decoration: BoxDecoration
             (
