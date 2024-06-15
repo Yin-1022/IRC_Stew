@@ -85,34 +85,34 @@ class _CurrencyViewState extends State<CurrencyView>
   Widget build(BuildContext context)
   {
     return Center
-    (
-      child: Column
       (
+      child: Column
+        (
         children:
         [
           const SizedBox(height: 30,),
           Container
-          (
+            (
             width: 300,
             height: 100,
             decoration: BoxDecoration
-            (
+              (
               border: Border.all(color: Colors.grey),
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(15)),
             ),
             child: Row
-            (
+              (
               children:
               [
                 Flexible
-                (
+                  (
                   flex: 5,
                   child: Padding
-                  (
+                    (
                     padding: const EdgeInsets.all(10),
                     child: TextField
-                    (
+                      (
                       style: const TextStyle(fontSize: 20),
                       decoration: const InputDecoration(hintText: "輸入數字", hintStyle: TextStyle(fontSize:25)),
                       textAlign: TextAlign.center,
@@ -130,34 +130,34 @@ class _CurrencyViewState extends State<CurrencyView>
                   ),
                 ),
                 Flexible
-                (
+                  (
                   flex: 3,
                   child: Center
-                  (
+                    (
                     child: DropdownButton<String>
                       (
-                      menuMaxHeight: 500,
+                        menuMaxHeight: 500,
 
-                      isExpanded: true,
-                      dropdownColor: Colors.white,
-                      value: startCurrency,
-                      items: indication.map
-                      (
-                         (String value)=> DropdownMenuItem<String>
-                         (
-                            value: value,
-                            child: Text(value, style: const TextStyle(fontSize: 21),)
-                         )
-                      ).toList(),
-                      onChanged: (newValue) async =>
-                      {
-                        startCurrency = newValue!,
-                        await _getRates(),
-                        setState(()  {
-                          double amount = double.parse(_amountControllerUp.text);
-                          _amountControllerDown.text = (amount * rate).toStringAsFixed(6);
-                        }),
-                      }
+                        isExpanded: true,
+                        dropdownColor: Colors.white,
+                        value: startCurrency,
+                        items: indication.map
+                          (
+                                (String value)=> DropdownMenuItem<String>
+                              (
+                                value: value,
+                                child: Text(value, style: const TextStyle(fontSize: 21),)
+                            )
+                        ).toList(),
+                        onChanged: (newValue) async =>
+                        {
+                          startCurrency = newValue!,
+                          await _getRates(),
+                          setState(()  {
+                            double amount = double.parse(_amountControllerUp.text);
+                            _amountControllerDown.text = (amount * rate).toStringAsFixed(6);
+                          }),
+                        }
                     ),
                   ),
                 )
@@ -166,13 +166,13 @@ class _CurrencyViewState extends State<CurrencyView>
           ),
           const SizedBox(height: 40,),
           IconButton
-          (
+            (
               onPressed: (){_swapCurrencies();},
               icon: const Icon(Icons.swap_vert,size: 90,color: Colors.white,)
           ),
           const SizedBox(height: 40,),
           Container
-          (
+            (
             width: 300,
             height: 100,
             decoration: BoxDecoration
@@ -186,13 +186,13 @@ class _CurrencyViewState extends State<CurrencyView>
               children:
               [
                 Flexible
-                (
+                  (
                   flex: 5,
                   child: Padding
                     (
                     padding: const EdgeInsets.all(10),
                     child: TextField
-                    (
+                      (
                       style: const TextStyle(fontSize: 20),
                       decoration: const InputDecoration(hintText: "輸入數字", hintStyle: TextStyle(fontSize: 25)),
                       textAlign: TextAlign.center,
@@ -215,30 +215,30 @@ class _CurrencyViewState extends State<CurrencyView>
                   child: Center
                     (
                     child: DropdownButton<String>
-                    (
-                      menuMaxHeight: 300,
-                      isExpanded: true,
-                      dropdownColor: Colors.white,
-                      value: toCurrency,
-                      items: indication.map
-                        (
-                              (String value)=> DropdownMenuItem<String>
-                            (
-                              value: value,
-                              child: Text(value, style: const TextStyle(fontSize: 21),)
-                          )
-                      ).toList(),
-                      onChanged: (newValue) async => {
-                        toCurrency = newValue!,
-                        await _getRates(),
-                        setState(()  {
-                          if(_amountControllerUp.text != '')
-                          {
-                            double amount = double.parse(_amountControllerUp.text);
-                            _amountControllerDown.text = (amount * rate).toStringAsFixed(6);
-                          }
-                        }),
-                      }
+                      (
+                        menuMaxHeight: 300,
+                        isExpanded: true,
+                        dropdownColor: Colors.white,
+                        value: toCurrency,
+                        items: indication.map
+                          (
+                                (String value)=> DropdownMenuItem<String>
+                              (
+                                value: value,
+                                child: Text(value, style: const TextStyle(fontSize: 21),)
+                            )
+                        ).toList(),
+                        onChanged: (newValue) async => {
+                          toCurrency = newValue!,
+                          await _getRates(),
+                          setState(()  {
+                            if(_amountControllerUp.text != '')
+                            {
+                              double amount = double.parse(_amountControllerUp.text);
+                              _amountControllerDown.text = (amount * rate).toStringAsFixed(6);
+                            }
+                          }),
+                        }
                     ),
                   ),
                 )
