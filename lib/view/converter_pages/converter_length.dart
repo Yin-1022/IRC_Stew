@@ -1,83 +1,41 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-class CurrencyView extends StatefulWidget
+class LengthView extends StatefulWidget
 {
 
-  const CurrencyView({
+  const LengthView({
     super.key,
   });
 
   @override
-  State<CurrencyView> createState() => _CurrencyViewState();
+  State<LengthView> createState() => _LengthViewState();
 }
 
-class _CurrencyViewState extends State<CurrencyView>
+class _LengthViewState extends State<LengthView>
 {
   final TextEditingController _amountControllerUp = TextEditingController();
   final TextEditingController _amountControllerDown = TextEditingController();
-  double rate = 0.0;
-  List<String> engCurrencies = ["TWD","DKK","USD","HKD","MYR","INR","JPY","KRW","CNY","GBP","EUR"];
-  List<String> indication = ["台幣","丹麥克朗","美金","港幣","馬來幣","印度盧比","日幣","韓幣","人民幣","英鎊","歐元",];
-  String? startCurrency = '台幣';
-  String? toCurrency = '美金';
+  List<String> items = ["英吋","英尺","英里","毫米","公分","公尺","公里"];
+  List<double> rates = [39.3701, 3.28084, 0.000621371, 1000, 100, 1, 0.001];
+  double indicate = 0.0;
+  String? defaultUnitUp = '公尺';
+  String? defaultUnitDown = '英尺';
 
   @override
   void initState()
   {
     super.initState();
-    _getCurrencies();
-    _getRates();
-  }
-
-  Future<void> _getCurrencies() async
-  {
-    var res = await http.get(Uri.parse('https://v6.exchangerate-api.com/v6/9498b31be2143d1a63aa767f/latest/USD'));
-    if(res.statusCode == 200)
-    {
-      var data = json.decode(res.body);
-
-      setState(() {
-        rate = data['conversion_rates'][engCurrencies[indication.indexOf(toCurrency!)]];
-      });
-    }
-    else
-    {
-      throw Exception("無法連上API");
-    }
-  }
-
-  Future<void> _getRates() async
-  {
-    var res = await http.get(Uri.parse('https://v6.exchangerate-api.com/v6/9498b31be2143d1a63aa767f/latest/${engCurrencies[indication.indexOf(startCurrency!)]}'));
-    if(res.statusCode == 200)
-    {
-      var data = json.decode(res.body);
-
-      setState(() {
-        rate = data['conversion_rates'][engCurrencies[indication.indexOf(toCurrency!)]];
-
-      });
-    }
-    else
-    {
-      throw Exception("無法連上API");
-    }
   }
 
   void _swapCurrencies()
   {
     setState(() {
-      String? temp = startCurrency;
-      startCurrency = toCurrency;
-      toCurrency = temp;
+      String? temp = defaultUnitUp;
+      defaultUnitUp = defaultUnitDown;
+      defaultUnitDown = temp;
       temp = _amountControllerUp.text;
       _amountControllerUp.text = _amountControllerDown.text;
       _amountControllerDown.text = temp;
-      _getRates();
     });
   }
 
@@ -85,9 +43,9 @@ class _CurrencyViewState extends State<CurrencyView>
   Widget build(BuildContext context)
   {
     return Center
-    (
-      child: Column
       (
+      child: Column
+        (
         children:
         [
           const SizedBox(height: 30,),
@@ -96,13 +54,13 @@ class _CurrencyViewState extends State<CurrencyView>
             width: 300,
             height: 100,
             decoration: BoxDecoration
-            (
+              (
               border: Border.all(color: Colors.grey),
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(15)),
             ),
             child: Row
-            (
+              (
               children:
               [
                 Flexible
@@ -114,7 +72,7 @@ class _CurrencyViewState extends State<CurrencyView>
                     child: TextField
                     (
                       style: const TextStyle(fontSize: 20),
-                      decoration: const InputDecoration(hintText: "輸入數字", hintStyle: TextStyle(fontSize:25)),
+                      decoration: const InputDecoration(hintText: "輸入數字", hintStyle: TextStyle(fontSize: 20)),
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       controller: _amountControllerUp,
@@ -122,40 +80,36 @@ class _CurrencyViewState extends State<CurrencyView>
                       {
                         if(value != '')
                         {
-                          double amount = double.parse(value);
-                          _amountControllerDown.text = (amount * rate).toString();
+                          double amount = double.parse(value) ;
+                          _amountControllerDown.text = (amount / rates[items.indexOf(defaultUnitUp!)] * rates[items.indexOf(defaultUnitDown!)]).toStringAsFixed(6);
                         }
                       },
                     ),
                   ),
                 ),
                 Flexible
-                (
-                  flex: 3,
-                  child: Center
                   (
+                  flex: 2,
+                  child: Center
+                    (
                     child: DropdownButton<String>
                       (
-                      menuMaxHeight: 500,
-
-                      isExpanded: true,
                       dropdownColor: Colors.white,
-                      value: startCurrency,
-                      items: indication.map
-                      (
-                         (String value)=> DropdownMenuItem<String>
-                         (
-                            value: value,
-                            child: Text(value, style: const TextStyle(fontSize: 21),)
-                         )
+                      value: defaultUnitUp,
+                      items: items.map
+                        (
+                              (String value)=> DropdownMenuItem<String>
+                            (
+                              value: value,
+                              child: Text(value, style: const TextStyle(fontSize: 24),)
+                          )
                       ).toList(),
-                      onChanged: (newValue) async =>
+                      onChanged: (newValue) =>
                       {
-                        startCurrency = newValue!,
-                        await _getRates(),
-                        setState(()  {
-                          double amount = double.parse(_amountControllerUp.text);
-                          _amountControllerDown.text = (amount * rate).toStringAsFixed(6);
+                        defaultUnitUp = newValue!,
+                        setState(() {
+                        double amount = double.tryParse(_amountControllerUp.text) ?? 0;
+                        _amountControllerDown.text = (amount / rates[items.indexOf(defaultUnitUp!)] * rates[items.indexOf(defaultUnitDown!)]).toStringAsFixed(6);
                         }),
                       }
                     ),
@@ -186,7 +140,7 @@ class _CurrencyViewState extends State<CurrencyView>
               children:
               [
                 Flexible
-                (
+                  (
                   flex: 5,
                   child: Padding
                     (
@@ -194,16 +148,15 @@ class _CurrencyViewState extends State<CurrencyView>
                     child: TextField
                     (
                       style: const TextStyle(fontSize: 20),
-                      decoration: const InputDecoration(hintText: "輸入數字", hintStyle: TextStyle(fontSize: 25)),
+                      decoration: const InputDecoration(hintText: "輸入數字", hintStyle: TextStyle(fontSize: 20)),
                       textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
                       controller: _amountControllerDown,
                       onChanged: (value)
                       {
                         if(value != '')
                         {
                           double amount = double.parse(value);
-                          _amountControllerUp.text = (amount / rate).toStringAsFixed(6);
+                          _amountControllerUp.text = (amount / rates[items.indexOf(defaultUnitDown!)] * rates[items.indexOf(defaultUnitUp!)]).toStringAsFixed(6);
                         }
                       },
                     ),
@@ -211,31 +164,29 @@ class _CurrencyViewState extends State<CurrencyView>
                 ),
                 Flexible
                   (
-                  flex: 3,
+                  flex: 2,
                   child: Center
                     (
                     child: DropdownButton<String>
-                    (
-                      menuMaxHeight: 300,
-                      isExpanded: true,
+                      (
                       dropdownColor: Colors.white,
-                      value: toCurrency,
-                      items: indication.map
+                      value: defaultUnitDown,
+                      items: items.map
                         (
-                              (String value)=> DropdownMenuItem<String>
+                            (String value)=> DropdownMenuItem<String>
                             (
                               value: value,
-                              child: Text(value, style: const TextStyle(fontSize: 21),)
-                          )
+                              child: Text(value, style: const TextStyle(fontSize: 24),)
+                            )
                       ).toList(),
-                      onChanged: (newValue) async => {
-                        toCurrency = newValue!,
-                        await _getRates(),
-                        setState(()  {
+                      onChanged: (newValue) =>
+                      {
+                        defaultUnitDown = newValue!,
+                        setState(() {
                           if(_amountControllerUp.text != '')
                           {
-                            double amount = double.parse(_amountControllerUp.text);
-                            _amountControllerDown.text = (amount * rate).toStringAsFixed(6);
+                            double amount = double.tryParse(_amountControllerUp.text) ?? 0;
+                            _amountControllerDown.text = (amount / rates[items.indexOf(defaultUnitUp!)] * rates[items.indexOf(defaultUnitDown!)]).toStringAsFixed(6);
                           }
                         }),
                       }
@@ -245,8 +196,6 @@ class _CurrencyViewState extends State<CurrencyView>
               ],
             ),
           ),
-          const SizedBox(height: 40,),
-          Text("1 $startCurrency = $rate $toCurrency", style: const TextStyle(fontSize: 29, color: Colors.white)),
         ],
       ),
     );

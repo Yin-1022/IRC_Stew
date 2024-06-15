@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:irc_stew/view/converter_pages/converter_currency.dart';
+import 'package:irc_stew/view/converter_pages/converter_length.dart';
+import 'package:irc_stew/view/converter_pages/converter_weight.dart';
 
 class Currency extends StatefulWidget
 {
@@ -19,6 +21,7 @@ class _CurrencyState extends State<Currency>
   {
     return Scaffold
     (
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(title: const Text("換算"),backgroundColor: Colors.grey.shade500,),
       backgroundColor: Colors.grey.shade700,
       body: Center
@@ -74,9 +77,9 @@ Widget _itemShowing(String? option)
     case '貨幣':
       return CurrencyView();
     case '長度':
-      return Container();
+      return LengthView();
     case '重量':
-      return Container();
+      return WeightView();
     default:
       return Container();
   }

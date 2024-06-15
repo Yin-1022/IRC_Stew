@@ -3,17 +3,15 @@ import 'package:http/http.dart' as http;
 
 class ApiClientCurrency
 {
-  final Uri currencyURL = Uri.https("api.coinbase.com","/v2/exchange-rates");
-
   Future<List<String>> getCurrencies() async
   {
-    http.Response res = await http.get(currencyURL);
+    var res = await http.get(Uri.parse('https://v6.exchangerate-api.com/v6/9498b31be2143d1a63aa767f/latest/USD'));
     if(res.statusCode == 200)
     {
-      var body = jsonDecode(res.body);
-      var list = body["rates"];
-      List<String> allCurrencies = (list.keys).toList();
-      return allCurrencies;
+      var data = json.decode(res.body);
+      //var list = data["rates"];
+
+      return data;
     }
     else
     {
