@@ -11,8 +11,10 @@ class DataBase
   void createInitialData()
   {
     wheelList = [
-      Wheel(id: 0, content: "hey", color: Colors.red.shade300),
-      Wheel(id: 1, content: "he", color: Colors.blue.shade300)
+      Wheel(id: 0, content: "美式", color: Colors.red.shade300),
+      Wheel(id: 1, content: "麻辣燙", color: Colors.blue.shade300),
+      Wheel(id: 2, content: "59", color: Colors.green.shade300),
+      Wheel(id: 3, content: "拉麵", color: Colors.yellow.shade300),
     ];
   }
 

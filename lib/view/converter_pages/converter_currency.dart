@@ -123,7 +123,7 @@ class _CurrencyViewState extends State<CurrencyView>
                         if(value != '')
                         {
                           double amount = double.parse(value);
-                          _amountControllerDown.text = (amount * rate).toString();
+                          _amountControllerDown.text = (amount * rate).toStringAsFixed(6);
                         }
                       },
                     ),
@@ -216,7 +216,7 @@ class _CurrencyViewState extends State<CurrencyView>
                     (
                     child: DropdownButton<String>
                       (
-                        menuMaxHeight: 300,
+                        menuMaxHeight: 500,
                         isExpanded: true,
                         dropdownColor: Colors.white,
                         value: toCurrency,

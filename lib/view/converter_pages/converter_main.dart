@@ -60,7 +60,7 @@ class _CurrencyState extends State<Currency>
                     ),
                   ),
                 ),
-                SizedBox(height: 50,),
+                const SizedBox(height: 50,),
                 _itemShowing(selectedItem)
               ],
             ),
@@ -75,11 +75,11 @@ Widget _itemShowing(String? option)
   switch (option)
   {
     case '貨幣':
-      return CurrencyView();
+      return const CurrencyView();
     case '長度':
-      return LengthView();
+      return const LengthView();
     case '重量':
-      return WeightView();
+      return const WeightView();
     default:
       return Container();
   }

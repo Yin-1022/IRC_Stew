@@ -22,11 +22,10 @@ class _HomePageState extends State<HomePage>
       resizeToAvoidBottomInset : false,
       body: const Column
       (
+          mainAxisAlignment: MainAxisAlignment.center,
           children:
           [
             SizedBox(height: 70),
-            ButtonBox(boxSize: 200, boxText:"天氣" , boxIcon: Icons.sunny, destination: SpinWheel()),
-            SizedBox(height: 30),
             Row
             (
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -36,17 +35,17 @@ class _HomePageState extends State<HomePage>
                 ButtonBox(boxSize: 150, boxText:"換算" , boxIcon: Icons.calculate, destination: Currency()),
               ],
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 50),
             Row
             (
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children:
               [
                 ButtonBox(boxSize: 150, boxText:"行事曆" , boxIcon: Icons.calendar_month, destination: SpinWheel()),
-                ButtonBox(boxSize: 150, boxText:"轉盤" , boxIcon: Icons.settings_backup_restore, destination: Currency()),
+                ButtonBox(boxSize: 150, boxText:"開銷" , boxIcon: Icons.bar_chart, destination: Currency()),
               ],
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 50),
             ButtonBox(boxSize: 200, boxText:"天氣" , boxIcon: Icons.sunny, destination: SpinWheel()),
           ],
       ),

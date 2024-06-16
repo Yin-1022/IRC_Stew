@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
-import 'package:irc_stew/data/database.dart';
+import 'package:irc_stew/data/wheel_database.dart';
 import 'package:irc_stew/model/wheel.dart';
 import 'package:irc_stew/model/color.dart';
 import 'package:rxdart/rxdart.dart';
