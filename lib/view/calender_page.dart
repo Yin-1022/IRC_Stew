@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:irc_stew/model/event.dart';
@@ -18,7 +17,6 @@ class _CalendarState extends State<Calendar> {
   DateTime _selectedDay = DateTime.now();
   DateTime _showingDate = DateTime.now();
   String eventTypeValue = "to-do list"; // Default value for radio buttons
-  List<Event> dayEvent = [];
   Map<DateTime, List<Event>> events = {};
   final TextEditingController _eventController = TextEditingController();
   late final ValueNotifier<List<Event>> _selectedEvents;
@@ -30,8 +28,7 @@ class _CalendarState extends State<Calendar> {
     super.initState();
     if (_dataBox.get("eventList") == null) {
       db.createInitialData();
-      dayEvent = db.eventList;
-      events.addAll({_selectedDay: dayEvent});
+      events.addAll({_selectedDay: db.eventList});
     }
     events = LinkedHashMap(
       equals: isSameDayWithoutTime,
@@ -150,12 +147,13 @@ class _CalendarState extends State<Calendar> {
                               actions: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    setState(() {});
-                                    dayEvent.add(Event(_eventController.text, eventTypeValue));
+                                    final newEvent = Event(_eventController.text, eventTypeValue);
+                                    final selectedEvents = events[_selectedDay] ?? [];
+                                    selectedEvents.add(newEvent);
+                                    events[_selectedDay] = selectedEvents;
+                                    _eventController.clear();
                                     _selectedEvents.value = _getEventsForDay(_selectedDay);
-                                    events.addAll({_selectedDay: dayEvent});
-                                    _selectedEvents.value = _getEventsForDay(_selectedDay);
-                                    _onDaySelected;
+                                    print(events);
                                     Navigator.of(context).pop();
                                   },
                                   child: const Text("確定", style: TextStyle(fontSize: 20)),
@@ -181,25 +179,19 @@ class _CalendarState extends State<Calendar> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Container
-                      (
+                      child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           border: Border.all(),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: ListTile
-                        (
-                          leading: Wrap
-                          (
-                            children:
-                            [
+                        child: ListTile(
+                          leading: Wrap(
+                            children: [
                               _itemShowing(events[_selectedDay]?[index].mode),
                             ],
                           ),
-                          onTap: () => editEvent(context, index),
-                          title: Text
-                          (
+                          title: Text(
                             value[index].title,
                             style: const TextStyle(fontSize: 20),
                           ),
@@ -217,92 +209,25 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_selectedDay, selectedDay)) {
-      setState(() {
-        _selectedDay = selectedDay;
-        _today = focusedDay;
-        _showingDate = selectedDay;
-        _selectedEvents.value = _getEventsForDay(selectedDay);
-        dayEvent = [];
-        print(events);
-      });
-    }
+    setState(() {
+      _selectedDay = selectedDay;
+      _today = focusedDay;
+      _showingDate = selectedDay;
+      _selectedEvents.value = _getEventsForDay(selectedDay);
+    });
   }
 
   List<Event> _getEventsForDay(DateTime day) {
     return events[day] ?? [];
   }
-
-  void deleteEvent(int index) {
-    setState(() {});
-    Event? event = events[_selectedDay]?[index];
-    events[_selectedDay]?.remove(event);
-    _selectedEvents.value = _getEventsForDay(_selectedDay);
-  }
-
-  void editEvent(BuildContext context, int index) => showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text("編輯選項"),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _eventController,
-              decoration: const InputDecoration(
-                hintText: "Enter text",
-                hintStyle: TextStyle(fontSize: 20),
-              ),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    deleteEvent(index);
-                    Navigator.of(context).pop();
-                  },
-                  icon: const Icon(Icons.delete, size: 40),
-                ),
-                TextButton(
-                  onPressed: () {
-                    String newTitle = _eventController.text;
-                    setState(() {
-                      events[_selectedDay]?[index].title = newTitle;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("確定", style: TextStyle(fontSize: 20)),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }
 
-Widget _itemShowing(String? option)
-{
-  bool isChecked = false;
-
-  switch (option)
-  {
+Widget _itemShowing(String? option) {
+  switch (option) {
     case 'to-do list':
-      return Transform.scale
-      (
-        scale: 1.7,
-        child: Checkbox
-          (
-            value: isChecked,
-            onChanged: (value){}
-          ),
-      );
+      return const Icon(Icons.check_box, size: 24);
     case 'note':
-      return const Icon(Icons.circle,size: 20,);
+      return const Icon(Icons.circle, size: 24);
     default:
       return Container();
   }

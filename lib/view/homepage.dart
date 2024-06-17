@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:irc_stew/view/spinning_wheel_page.dart';
 import 'package:irc_stew/view/converter_pages/converter_main.dart';
 import 'package:irc_stew/view/calender_page.dart';
+import 'package:irc_stew/view/expense_tracker/expense_tracker_page.dart';
 
 
 class HomePage extends StatefulWidget
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage>
               children:
               [
                 ButtonBox(boxSize: 150, boxText:"行事曆" , boxIcon: Icons.calendar_month, destination: Calendar()),
-                ButtonBox(boxSize: 150, boxText:"開銷" , boxIcon: Icons.bar_chart, destination: Currency()),
+                ButtonBox(boxSize: 150, boxText:"開銷" , boxIcon: Icons.bar_chart, destination: ExpenseTracker()),
               ],
             ),
             SizedBox(height: 50),
