@@ -25,11 +25,5 @@ class BarData
 
   List<IndividualBar> barData = [];
 
-  void initializeBarData()
-  {
-    barData =
-    {
-      IndividualBar(x: 0, y: sunAmount,)
-    }
-  }
+
 }
