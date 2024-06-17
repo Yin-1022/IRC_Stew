@@ -1,10 +1,12 @@
 class Event
 {
   String title;
+  String mode;
 
   Event
   (
-      this.title
+      this.title,
+      this.mode
   );
 
   @override

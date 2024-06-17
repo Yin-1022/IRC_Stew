@@ -9,7 +9,7 @@ class DataBase
 
   void createInitialData()
   {
-    eventList=[Event("預設項目")];
+    eventList=[Event("預設項目", "to-do list")];
   }
 
   void loadData()

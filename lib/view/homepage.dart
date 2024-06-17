@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children:
               [
-                ButtonBox(boxSize: 150, boxText:"行事曆" , boxIcon: Icons.calendar_month, destination: Calender()),
+                ButtonBox(boxSize: 150, boxText:"行事曆" , boxIcon: Icons.calendar_month, destination: Calendar()),
                 ButtonBox(boxSize: 150, boxText:"開銷" , boxIcon: Icons.bar_chart, destination: Currency()),
               ],
             ),
