@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:irc_stew/model/event.dart';
@@ -17,7 +19,7 @@ class _CalenderState extends State<Calender>
   DateTime _today = DateTime.now();
   DateTime _selectedDay= DateTime.now();
   DateTime _showingDate = DateTime.now();
-  String mapTime = '';
+  String eventTypeValue = "note";
   List<Event> dayEvent = [];
   Map<DateTime, List<Event>> events = {};
   final TextEditingController _eventController = TextEditingController();
@@ -35,7 +37,6 @@ class _CalenderState extends State<Calender>
         _showingDate = selectedDay;
         _selectedEvents.value = _getEventsForDay(selectedDay);
         dayEvent = [];
-        print(events);
       });
     }
   }
@@ -56,6 +57,12 @@ class _CalenderState extends State<Calender>
       dayEvent = db.eventList;
       events.addAll({_selectedDay : dayEvent});
     }
+    events = LinkedHashMap
+    (
+      equals: isSameDayWithoutTime,
+      hashCode: getHashCode
+    )..addAll(events);
+
     _showingDate = _today;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
   }
@@ -108,20 +115,59 @@ class _CalenderState extends State<Calender>
                             {
                                 showDialog
                                 (
+                                   barrierLabel: _eventController.text = "輸入文字",
                                    context: context,
                                    builder: (context)
                                    {
                                       return AlertDialog
                                       (
                                           scrollable: true,
-                                          title: const Text("Event name"),
-                                          content: Padding
+                                          title: const Text("新增項目", style: TextStyle(fontSize: 20),),
+                                          content: Column
                                           (
-                                             padding: const EdgeInsets.all(8),
-                                             child: TextField
-                                             (
-                                                controller: _eventController,
-                                             ),
+                                            children:
+                                            [
+                                              Padding
+                                              (
+                                                 padding: const EdgeInsets.all(8),
+                                                 child: TextField
+                                                 (
+                                                    controller: _eventController,
+                                                    style: const TextStyle(fontSize: 20),
+                                                 ),
+                                              ),
+                                              SizedBox(height: 30,),
+                                              Row
+                                              (
+                                                children:
+                                                [
+                                                  Row
+                                                  (
+                                                    children:
+                                                    [
+                                                      Radio
+                                                      (
+                                                          value: "note",
+                                                          groupValue: eventTypeValue,
+                                                          onChanged: ((value) {setState(() {
+                                                            eventTypeValue = value!;
+                                                          });}),
+                                                      ),
+                                                      Text("記事",style: TextStyle(fontSize: 20),),
+                                                      Radio
+                                                        (
+                                                          value: "to-do list",
+                                                          groupValue: eventTypeValue,
+                                                          onChanged: ((value) {setState(() {
+                                                            eventTypeValue = value!;
+                                                          });})
+                                                      ),
+                                                      Text("待辦清單",style: TextStyle(fontSize: 20),),
+                                                    ],
+                                                  ),
+                                                ],
+                                              )
+                                            ],
                                           ),
                                              actions:
                                              [
@@ -131,12 +177,12 @@ class _CalenderState extends State<Calender>
                                                    {
                                                        setState(() {});
                                                        dayEvent.add(Event(_eventController.text));
+                                                       _selectedEvents.value = _getEventsForDay(_selectedDay);
                                                        events.addAll({_selectedDay : dayEvent});
                                                        _selectedEvents.value = _getEventsForDay(_selectedDay);
-                                                       _onDaySelected;
                                                        Navigator.of(context).pop();
                                                    },
-                                                   child: const Text("Submit")
+                                                   child: const Text("確定", style: TextStyle(fontSize: 20))
                                                 )
                                              ],
                                       );
@@ -174,8 +220,8 @@ class _CalenderState extends State<Calender>
                                      ),
                                      child: ListTile
                                      (
-                                        onTap: () => print(""),
-                                        title: Text(value[index].title),
+                                        onTap: () => editEvent(context, index),
+                                        title: Text(value[index].title,style: const TextStyle(fontSize: 20),),
                                      ),
                                  ),
                              );
@@ -188,4 +234,72 @@ class _CalenderState extends State<Calender>
       ),
     );
   }
+
+  void deleteEvent(int index)
+  {
+    setState(() {});
+    Event? event = events[_selectedDay]?[index];
+    events[_selectedDay]?.remove(event);
+    _selectedEvents.value = _getEventsForDay(_selectedDay);
+  }
+
+  void editEvent(BuildContext context, int index) => showDialog
+  (
+      barrierLabel: _eventController.text = (events[_selectedDay]?[index]).toString(),
+      context: context,
+      builder: (context) => AlertDialog
+        (
+        title: const Text("編輯選項"),
+        content: SingleChildScrollView
+          (
+          child: Column
+            (
+            mainAxisSize: MainAxisSize.min,
+            children:
+            [
+              TextField
+              (
+                controller: _eventController,
+                decoration: InputDecoration(hintText: (events[_selectedDay]?[index]).toString(), hintStyle: const TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(height: 30),
+              Row
+                (
+                mainAxisAlignment: MainAxisAlignment.end,
+                children:
+                [
+                  IconButton
+                    (
+                      onPressed: ()
+                      {
+                        deleteEvent(index);
+                        //db.updateDataBase();
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.delete, size: 40,)
+                  ),
+                ],
+              ),
+              TextButton
+                (
+                  child: const Text("確定", style: TextStyle(fontSize: 20)),
+                  onPressed: ()
+                  {
+                    String wheelContext = _eventController.text;
+                    setState(()
+                    {
+                      if(wheelContext != "")
+                      {
+                        events[_selectedDay]?[index] = Event(wheelContext);
+                        //db.updateDataBase();
+                      }
+                    });
+                    Navigator.of(context).pop();
+                  }
+              ),
+            ],
+          ),
+        ),
+      )
+  );
 }

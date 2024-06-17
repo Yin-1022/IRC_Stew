@@ -275,7 +275,7 @@ class _SpinWheelState extends State<SpinWheel>
       barrierLabel: _textFieldController.text = db.wheelList[pressed].content,
       context: context,
       builder: (context) => AlertDialog
-        (
+      (
         title: const Text("編輯選項"),
         content: SingleChildScrollView
         (
