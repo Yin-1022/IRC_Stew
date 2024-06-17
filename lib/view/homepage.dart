@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:irc_stew/view/spinning_wheel_page.dart';
 import 'package:irc_stew/view/converter_pages/converter_main.dart';
+import 'package:irc_stew/view/calender_page.dart';
 
 
 class HomePage extends StatefulWidget
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children:
               [
-                ButtonBox(boxSize: 150, boxText:"行事曆" , boxIcon: Icons.calendar_month, destination: SpinWheel()),
+                ButtonBox(boxSize: 150, boxText:"行事曆" , boxIcon: Icons.calendar_month, destination: Calender()),
                 ButtonBox(boxSize: 150, boxText:"開銷" , boxIcon: Icons.bar_chart, destination: Currency()),
               ],
             ),
